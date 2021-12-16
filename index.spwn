@@ -1,0 +1,74 @@
+// dependencies
+gs = import gamescene
+import "../canvas/canvas.spwn"
+
+// local dependencies
+extract import "./constants.spwn"
+
+// helper macros
+width_counter = () => counter(bits = WIDTH_BITS)
+height_counter = () => counter(bits = HEIGHT_BITS)
+create_segment = () => {
+    x: width_counter(),
+    y: height_counter(),
+}
+
+// screen = @canvas::new(WIDTH, HEIGHT)
+
+let snake = {
+    direction: counter(bits = 2),
+    head: create_segment(),
+    tail: ([0] * SNAKE_LENGTH).map(a => create_segment()),
+    length: counter(bits = SNAKE_LENGTH_BITS),
+}
+
+// todo: apple generator
+
+/*
+    snake.direction
+         1
+        2+0
+         3
+    snake.length
+        0 # (head)
+        1 ## (tail)(head)
+        2 ### (tail)(tail)(head)
+*/
+
+// left turn
+on(gs.button_a(), !{
+    if snake.direction >= 3 {
+        snake.direction -= 3
+    } else {
+        snake.direction += 1
+    }
+})
+
+// right turn
+on(gs.button_b(), !{
+    if snake.direction == 0 {
+        snake.direction += 3
+    } else {
+        snake.direction -= 1
+    }
+})
+
+wait(1) // delay start
+-> while_loop(() => true, (){
+    // move head
+    switch snake.direction {
+        case 0: (snake.head.x += (1 if snake.head.x < WIDTH - 1 else -WIDTH + 1)),
+        case 1: (snake.head.y += (1 if snake.head.y < HEIGHT - 1 else -HEIGHT + 1)),
+        case 2: (snake.head.x -= (1 if snake.head.x > 0 else -WIDTH + 1)),
+        case 3: (snake.head.y -= (1 if snake.head.y > 0 else -HEIGHT + 1)),
+    }
+
+    // move tail
+    tail_rev = snake.tail.reverse()
+    for i in 0..tail_rev.length {
+        tail_rev[i].x = (tail_rev[i+1].x if i < tail_rev.length - 1 else snake.head.x)
+        tail_rev[i].y = (tail_rev[i+1].y if i < tail_rev.length - 1 else snake.head.y)
+    }
+
+    // todo: display
+}, delay = 0.5)

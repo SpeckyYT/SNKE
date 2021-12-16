@@ -1,0 +1,16 @@
+WIDTH = 20
+HEIGHT = 10
+SNAKE_LENGTH = 249
+
+SNAKE_LENGTH_BITS = $.ceil($.log(SNAKE_LENGTH, 2))
+WIDTH_BITS = $.ceil($.log(WIDTH, 2))
+HEIGHT_BITS = $.ceil($.log(HEIGHT, 2))
+
+return {
+    WIDTH,
+    WIDTH_BITS,
+    HEIGHT,
+    HEIGHT_BITS,
+    SNAKE_LENGTH,
+    SNAKE_LENGTH_BITS,
+}
